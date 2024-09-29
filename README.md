@@ -29,6 +29,11 @@ print(result.reasoning)
 
 # development
 
+install pre-commit hooks
+```
+pre-commit install
+```
+
 run tests
 ```
 uv run pytest test
