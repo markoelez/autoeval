@@ -25,7 +25,7 @@ class Eval(ABC):
 
 class SemanticEval(Eval):
   # result = await semantic_eval(input, output, expect, judge="gpt-4o")
-  async def __call__(self, input: str, output: str, expect: list[str], judge: str = "gpt-4o") -> EvalResult:
+  async def __call__(self, input: str, output: str, expect: list[str], judge: str = "gpt-4o-mini") -> EvalResult:
     tpl_path = get_path("tpl/judge.txt")
     with open(tpl_path, "r") as f:
       tpl = jinja2.Template(f.read())
