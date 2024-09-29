@@ -1,7 +1,10 @@
+import pytest
+
 from autoeval.llm import SemanticEval
 
 
-def test_semantic_eval():
+@pytest.mark.asyncio
+async def test_semantic_eval():
   semantic_eval = SemanticEval()
 
   expect = [
@@ -12,8 +15,6 @@ def test_semantic_eval():
   input = "Which country has the highest population?"
   output = "People's Republic of China"
 
-  result = semantic_eval(input, output, expect, judge="gpt-4o")
+  result = await semantic_eval(input, output, expect, judge="gpt-4o")
 
-  print(result.verdict)
-  print(result.confidence)
-  print(result.reasoning)
+  assert result.score > 95

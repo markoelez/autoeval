@@ -1,0 +1,21 @@
+You are evaluating the response of an AI model.
+
+The model was asked
+<prompt>
+{{ input }}
+</prompt>
+
+The model responded:
+<response>
+{{ output }}
+</response>
+
+Your task is to ensure that the following expectations are met:
+<expectations>
+{{ expectations }}
+</expectations>
+
+Your response should use the following JSON format:
+{{ response_format }}
+
+Reply only with your assessment.
