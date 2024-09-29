@@ -6,6 +6,7 @@ target interface:
 ```python
 from autoeval.llm import SemanticEvaluator
 
+
 eval = SemanticEval()
 
 expect = [
@@ -16,7 +17,7 @@ expect = [
 input = "Which country has the highest population?"
 output = "People's Republic of China"
 
-result = eval(input, output, expect)
+result = eval(input, output, expect, judge='gpt-4o')
 
 print(result.verdict)
 print(result.confidence)
