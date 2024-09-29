@@ -17,5 +17,5 @@ class Eval(ABC):
 
 
 class SemanticEval(Eval):
-  def __call__(self, *args: Any, **kwds: Any) -> EvalResult:
+  def __call__(self, *args: Any, **kwargs: Any) -> EvalResult:
     return EvalResult(verdict="GOOD", confidence=100, reasoning="The output is correct")
