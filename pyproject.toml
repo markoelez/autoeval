@@ -3,7 +3,9 @@ name = "autoeval"
 version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "openai>=1.50.2",
+]
 
 [project.scripts]
 hello = "autoeval:hello"
