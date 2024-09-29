@@ -1,13 +1,16 @@
+# autoeval
+
 autoeval framework for AI models
 
+# goal
 
 target interface:
 
 ```python
-from autoeval.llm import SemanticEvaluator
+from autoeval.llm import SemanticEval
 
 
-eval = SemanticEval()
+semantic_eval = SemanticEval()
 
 expect = [
   'The output should mention China',
@@ -17,9 +20,16 @@ expect = [
 input = "Which country has the highest population?"
 output = "People's Republic of China"
 
-result = eval(input, output, expect, judge='gpt-4o')
+result = semantic_eval(input, output, expect, judge='gpt-4o')
 
 print(result.verdict)
 print(result.confidence)
 print(result.reasoning)
+```
+
+# development
+
+run tests
+```
+uv run pytest test
 ```
