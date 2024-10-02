@@ -14,10 +14,11 @@ async def sample(
   max_tokens: int = 64,
   stream: bool = False,
   response_format: Optional[BaseModel] = None,
+  model="gpt-4o-mini",
 ) -> str:
   client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
   res = await client.chat.completions.create(
-    model="gpt-4o",
+    model=model,
     messages=messages,
     temperature=temperature,
     max_tokens=max_tokens,

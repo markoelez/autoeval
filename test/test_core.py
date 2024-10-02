@@ -1,20 +1,16 @@
 import pytest
 
-from autoeval.llm import SemanticEval
+from autoeval.llm import Evaluator, Factuality
 
 
 @pytest.mark.asyncio
 async def test_semantic_eval():
-  semantic_eval = SemanticEval()
-
-  expect = [
-    "The output should mention China",
-    "The output should not exceed 5 words",
+  dataset = [
+    {"input": "Which country has the highest population?", "output": "People's Republic of China", "expected": "China"},
   ]
 
-  input = "Which country has the highest population?"
-  output = "People's Republic of China"
+  evaluator = Evaluator(criteria=[Factuality()], threshold=0.9, judge="gpt-4o-mini")
 
-  result = await semantic_eval(input, output, expect, judge="gpt-4o")
+  results = await evaluator.run(dataset)
 
-  assert result.score > 95
+  assert all([x.score >= 0.9 for x in results])

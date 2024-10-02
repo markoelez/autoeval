@@ -1,0 +1,23 @@
+You are evaluating the factuality of an AI model's response.
+
+The model was asked:
+<prompt>
+{{ input }}
+</prompt>
+
+The model responded:
+<response>
+{{ output }}
+</response>
+
+The model was expected to output:
+<expectation>
+{{ expected }}
+</expectation>
+
+Your response should be a JSON object with the following fields:
+1. score: a floating point number between 0 and 1 indicating how well the model performed
+2. reasoning: 1-2 sentences describing your reasoning
+
+The factuality of the response relative to what was expected is the only criteria you should evaluate. Nothing else matters.
+Reply only with your assessment.

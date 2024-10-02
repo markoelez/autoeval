@@ -1,5 +1,5 @@
+import asyncio
 from abc import ABC, abstractmethod
-from typing import Any
 
 import jinja2
 from pydantic import BaseModel
@@ -8,32 +8,47 @@ from .oai import sample
 from .util import get_path
 
 
+def load_tpl(path: str) -> jinja2.Template:
+  with open(get_path(path), "r") as f:
+    return jinja2.Template(f.read())
+
+
 class EvalResult(BaseModel):
-  score: int
+  score: float
   reasoning: str
 
-  @classmethod
-  def to_tpl(cls) -> str:
-    return '{"score": int (0 to 100), "reasoning": str}'
 
-
-class Eval(ABC):
+class EvalCriteria(ABC):
   @abstractmethod
-  async def __call__(self, *args: Any, **kwds: Any) -> EvalResult:
+  async def __call__(self, input: str, output: str, expected: str, judge: str) -> EvalResult:
     raise NotImplementedError
 
 
-class SemanticEval(Eval):
-  # result = await semantic_eval(input, output, expect, judge="gpt-4o")
-  async def __call__(self, input: str, output: str, expect: list[str], judge: str = "gpt-4o-mini") -> EvalResult:
-    tpl_path = get_path("tpl/judge.txt")
-    with open(tpl_path, "r") as f:
-      tpl = jinja2.Template(f.read())
+class Factuality(EvalCriteria):
+  tpl = load_tpl("tpl/factuality.txt")
+
+  async def __call__(self, input: str, output: str, expected: str, judge: str) -> EvalResult:
     params = {
       "input": input,
       "output": output,
-      "expectations": expect,
-      "response_format": EvalResult.to_tpl(),
+      "expected": expected,
     }
-    messages = [{"role": "user", "content": tpl.render(**params)}]
-    return await sample(messages=messages, temperature=0.3, max_tokens=512, response_format=EvalResult)
+    messages = [{"role": "user", "content": self.tpl.render(**params)}]
+    return await sample(messages=messages, temperature=0.3, max_tokens=512, response_format=EvalResult, model=judge)
+
+
+class Evaluator:
+  def __init__(self, criteria: list[EvalCriteria], threshold: float = 0.9, judge: str = "gpt-4o-mini"):
+    self.criteria = criteria
+    self.threshold = threshold
+    self.judge = judge
+    self._concurrency = 10
+    self._semaphore = asyncio.Semaphore(self._concurrency)
+
+  async def _run(self, input: str, output: str, expected: str, criteria: EvalCriteria):
+    async with self._semaphore:
+      return await criteria(input, output, expected, self.judge)
+
+  async def run(self, dataset: list[dict[str, str]]) -> list[EvalResult]:
+    tasks = [self._run(row["input"], row["output"], row["expected"], criteria) for row in dataset for criteria in self.criteria]
+    return await asyncio.gather(*tasks)
